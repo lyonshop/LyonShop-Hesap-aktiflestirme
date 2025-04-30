@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oyun Hesap Sistemi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3e7;
+            border-radius: 4px;
+            border: 1px solid #d4f4d4;
+            display: none;
+        }
+        .error {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Oyun Hesap Kod Girişi</h1>
+
+    <div class="container">
+        <label for="gameCode">Kodu Girin:</label>
+        <input type="text" id="gameCode" placeholder="Örneğin: XQZTU" />
+        <button onclick="checkCode()">Kod Kontrol Et</button>
+
+        <div id="result" class="result"></div>
+        <div id="error" class="error">Bu kod zaten kullanılmıştır.</div>
+    </div>
+
+    <script>
+        const gameData = {
+            "XQZTU": "Internet Cafe Simulator 2 - Kullanıcı: nojevik__1, Şifre: uhw2pgJ0rwpJ7",
+            "VCPRE": "Internet Cafe Simulator 2 - Kullanıcı: nojevik__1, Şifre: uhw2pgJ0rwpJ7",
+            "FWXTY": "Internet Cafe Simulator 2 - Kullanıcı: nojevik__1, Şifre: uhw2pgJ0rwpJ7",
+            "MNZRW": "Internet Cafe Simulator 2 - Kullanıcı: nojevik__1, Şifre: uhw2pgJ0rwpJ7",
+            "KJOLP": "Internet Cafe Simulator 2 - Kullanıcı: nojevik__1, Şifre: uhw2pgJ0rwpJ7",
+
+            "JWMPL": "Assassin's Creed Shadows - Kullanıcı: bxwba85822, Şifre: cabed03913",
+            "RXBGD": "Assassin's Creed Shadows - Kullanıcı: bxwba85822, Şifre: cabed03913",
+            "TLPVE": "Assassin's Creed Shadows - Kullanıcı: bxwba85822, Şifre: cabed03913",
+            "SHVFA": "Assassin's Creed Shadows - Kullanıcı: bxwba85822, Şifre: cabed03913",
+            "QWBMD": "Assassin's Creed Shadows - Kullanıcı: bxwba85822, Şifre: cabed03913",
+
+            "RQTVB": "Resident Evil 7 - Kullanıcı: jocuriargenrinia, Şifre: 70Games.net92",
+            "XJZPR": "Resident Evil 7 - Kullanıcı: jocuriargenrinia, Şifre: 70Games.net92",
+            "LVMIE": "Resident Evil 7 - Kullanıcı: jocuriargenrinia, Şifre: 70Games.net92",
+            "POHAX": "Resident Evil 7 - Kullanıcı: jocuriargenrinia, Şifre: 70Games.net92",
+            "AIELO": "Resident Evil 7 - Kullanıcı: jocuriargenrinia, Şifre: 70Games.net92",
+
+            "HDFKY": "Spiderman 2 Deluxe - Kullanıcı: kevinmorgan6z, Şifre: 1https://www.vpesports.com/sharedsteam",
+            "TUMYJ": "Spiderman 2 Deluxe - Kullanıcı: kevinmorgan6z, Şifre: 1https://www.vpesports.com/sharedsteam",
+            "QWPLZ": "Spiderman 2 Deluxe - Kullanıcı: kevinmorgan6z, Şifre: 1https://www.vpesports.com/sharedsteam",
+            "PXKDR": "Spiderman 2 Deluxe - Kullanıcı: kevinmorgan6z, Şifre: 1https://www.vpesports.com/sharedsteam",
+            "JAHSM": "Spiderman 2 Deluxe - Kullanıcı: kevinmorgan6z, Şifre: 1https://www.vpesports.com/sharedsteam",
+
+            "NVCJK": "ETS2 - Kullanıcı: mohammedov_Nox1, Şifre: n5nn5hacked",
+            "CFRZY": "ETS2 - Kullanıcı: mohammedov_Nox1, Şifre: n5nn5hacked",
+            "PBXTA": "ETS2 - Kullanıcı: mohammedov_Nox1, Şifre: n5nn5hacked",
+            "UJMOL": "ETS2 - Kullanıcı: mohammedov_Nox1, Şifre: n5nn5hacked",
+            "KBGHR": "ETS2 - Kullanıcı: mohammedov_Nox1, Şifre: n5nn5hacked",
+        };
+
+        const usedCodes = new Set();  // Kullanılmış kodları saklamak için
+
+        function checkCode() {
+            const code = document.getElementById("gameCode").value.toUpperCase();
+            const resultDiv = document.getElementById("result");
+            const errorDiv = document.getElementById("error");
+
+            // Eğer kod daha önce kullanılmışsa
+            if (usedCodes.has(code)) {
+                errorDiv.style.display = "block";
+                resultDiv.style.display = "none";
+                return;
+            }
+
+            // Geçerli kodsa
+            if(gameData[code]) {
+                usedCodes.add(code);  // Kodu "kullanılmış" olarak işaretle
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = gameData[code];
+                errorDiv.style.display = "none";
+            } else {
+                errorDiv.style.display = "none";
+                alert("Geçersiz kod!");
+            }
+        }
+    </script>
+
+</body>
+</html>
